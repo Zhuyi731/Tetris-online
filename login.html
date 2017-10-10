@@ -9,15 +9,15 @@
 </head>
 <body>
 	<div class="container">
-		<div class="login-box">
+		<div class="login-box " id ="login-box">
 			<h3>Welcome to Tetris Gaming</h3>
 			<div class="input-wrap">
 				<span class="u_user"></span>
-				<input type="text" class="username" placeholder="Enter your username">
+				<input type="text" class="username" name = "username" placeholder="Enter your username">
 			</div>
 			<div class="input-wrap">
 				<span class="u_pwd"></span>
-				<input type="password" class="password" placeholder="Enter your password">
+				<input type="password" class="password" name="password" placeholder="Enter your password">
 			</div>
 			<div class="button-wrap">
 				<button id="login">Login</button>
@@ -26,6 +26,30 @@
 				<button id="register">Register</button>
 			</div>
 		</div>
+		<div class="login-box register-box none" id="register-box">
+				<h3>Register Your Account</h3>
+				<div class="input-wrap">
+					<span class="register-text">Username:</span>
+					<input type="text" class="username" name= "username" placeholder="Enter your username">
+				</div>
+				<div class="input-wrap">
+					<span class="register-text">Password:</span>
+					<input type="password" class="password" name= "password" placeholder="Enter your password">
+				</div>
+				<div class="input-wrap">
+						<span class="register-text">Nickname:</span>
+						<input type="text" class="nickname" name="nickname" placeholder="Enter your nickname">
+					</div>
+				<div class="button-wrap">
+					<button id="onRegister">Register</button>
+				</div>
+				<div class="button-wrap">
+					<button id="back">Back</button>
+				</div>
+			</div>
 	</div>	
+	<script	src="./lib/jquery.js"></script>
+	<script	src="./lib/socket.io.js"></script>
+	<script	src="./js/login.js"></script>
 </body>
 </html>
