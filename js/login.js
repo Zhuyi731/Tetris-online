@@ -7,11 +7,17 @@ var socket = io("ws://localhost:3000");
     function initEvent(){
         socket.on("loginBack",function(data){
             console.log(data);
-            debugger;
             if(data.auth == true){
-                window.location.href = "/index.html?"+data.username;
+                window.location.href = "./index.html?"+data.username;
             }else{
                 alert("账户名或密码错误");
+            }
+        });
+
+        socket.on("backRegister",function(str){
+            alert(str);
+            if(str == "注册成功"){
+                $("#back")[0].click();
             }
         });
 
