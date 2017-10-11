@@ -20,23 +20,23 @@
             timer = setInterval(move,speed);
             game.init(doms);
         };
-
+        var stop = function(){
+         debugger;
+            clearInterval(timer);
+            document.onkeydown = null;
+            alert("you lose!");
+        }
         var move = function(){
 
             if(game.move("down")){
 
-
             }else{
-                // game.nextStep();
-
+                if(game.isGameOver()){
+                    stop();
+                }
             }
 
         }
-
-
-
-
-
 
         function bindKeyEvents() {
             document.onkeydown = function (e) {

@@ -7,7 +7,9 @@ var Game = function () {
         scoreDiv: null
     };
     //score
-    var scroe = 0;
+    var score = 0;
+    //游戏结束标志
+    var gameOver = false;
     //游戏数据
     var nextData = [
         [2, 2, 0, 0],
@@ -162,18 +164,22 @@ var Game = function () {
 
     var nextStep = function () {
         cur = next;
+        if(checkBlock(cur)){
         next = new Square("normal");
         nextData = next.data[next.dir];
         setBlockData();
         refresh(nextDoms, nextData);
         refresh(gameDoms, gameData);
+        }else{//说明已经无法下降了
+            gameOver = true;
+        }
     }
-
     /**
      * 消行
      */
     var clearLines = function () {
         var all ;
+        var linesCount = 0;
         for (var i = gameData.length - 1; i >= 0; i--) {
             all = true;
             for (var j = 0; j < gameData[0].length; j++) {
@@ -191,11 +197,21 @@ var Game = function () {
                 for(var m = 0;m<gameData[0].length;m++){
                     gameData[0][m] = 0;
                 }
+                linesCount++;
                 i++;
-                
             }
         }
+        return linesCount;
     }
+
+    /**
+     * 
+     */
+    var addScore = function(lines){
+        var scoreLevel = [0,10,30,100,180,360];
+        score += scoreLevel[lines]; 
+        doms.scoreDiv.innerHTML = score;
+    };
     /**
      * 让下落至最低端的方块固定下来
      * 
@@ -210,7 +226,10 @@ var Game = function () {
         }
         refresh(gameDoms, gameData);
         nextStep();
-        clearLines();
+        var lines = clearLines();
+        if( lines!= 0){
+            addScore(lines);
+        }
     }
 
     /**
@@ -288,9 +307,21 @@ var Game = function () {
             return false;
         }
     };
-
-
+    /**
+     * 检查游戏是否结束
+     */
+    var isGameOver = function(){
+        var over = false;
+        for(var i = 0;i<gameData[0].length;i++){
+            if(gameData[1][i] == 1){
+                return true;
+            }
+        }
+        return false;
+        
+    };
     //导出接口
+    this.isGameOver = isGameOver;
     this.nextStep = nextStep;
     this.canMove = canMove;
     this.move = move;
