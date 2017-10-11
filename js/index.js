@@ -5,9 +5,11 @@ $(function(){
         if(!auth){
             window.location.href = "./login.html";
         }else{//有权限登录
-            ;
+            
         }
     });
 
+    var local = new Local();
+    local.start();
 
 });
