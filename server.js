@@ -37,12 +37,21 @@ io.on("connection", function (socket) {
     socketList[socketCount] = socket;
     socketCount++;
     if (socket.count % 2 == 0) {
-        console.log("waiting: "+socket.count +" " + socketList.length);
+        console.log("waiting: " + socket.count + " " + socketList.length);
         socket.emit("waiting", "waiting for another player ......");
     } else {
-        console.log("start: "+socket.count +" " + socketList.length);
+        console.log("start: " + socket.count + " " + socketList.length);
         io.emit("start");
     }
+    socket.on("gameOver", function () {
+        if (socket.count % 2 == 0) {
+            socketList[socket.count + 1].emit("gameOver", true);
+            socketList[socket.count].emit("gameOver", false);
+        } else {
+            socketList[socket.count - 1].emit("gameOver", true);
+            socketList[socket.count ].emit("gameOver", false);
+        }
+    });
 
     /**
      * 绑定登录事件
@@ -104,6 +113,7 @@ var bindEvents = function (socket) {
     transport("next", socket);
     transport("move", socket);
 
+
 };
 
 /**
@@ -116,8 +126,8 @@ function transport(type, socket) {
     socket.on(type, function (data) {
         // console.log("transport "+type+" event");
         // console.log(socket.count +" " + socketList.length);
-        if(type == "move"){
-            console.log(data);            
+        if (type == "move") {
+            // console.log(data);            
         }
         if (socket.count % 2 == 0) {
             socketList[socket.count + 1].emit(type, data);
@@ -156,7 +166,7 @@ var registerLogic = function (socket) {
  * @param {*当前客户端} socket
  *  绑定登录逻辑
  */
-var loginLogic = function (socket) { 
+var loginLogic = function (socket) {
     socket.on("login", function (data) {
         var res = {
             "auth": false,

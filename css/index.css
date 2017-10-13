@@ -1,20 +1,97 @@
+body{
+  background:#F1F3F6;
+  color:#69777E;
+}
+.none{
+  display: none;
+}
+.clearfix { 
+    *zoom: 1; 
+} 
+.clearfix:before, 
+.clearfix:after { 
+    display: table; 
+    line-height: 0; 
+    content: ""; 
+} 
+.clearfix:after { 
+    clear: both; 
+} 
+.tips-div{
+  z-index:999;
+  position: relative;
+  height: 60px;
+  float: left;
+  margin-left: -267px;
+  margin-top: 247px;
+}
+.show-tips{
+  position: absolute;
+  top:0;
+  left:5px;
+  color:#FFF;
+  outline:none;
+  background-color: #C40F39;
+  height:40px;
+  width: 100px;
+  border-radius:6px;
+  font-size:16px;
+  font-weight: 400;
+  vertical-align: middle;
+}
+.tips{
+  background-color: #fff;
+  position: absolute;
+  top:0;
+  left:120px;
+  color:#C40F39;
+  font-size:14px;
+  line-height:28px;
+  width: 400px;
+  border:1px solid #D1DAE0;
+}
+.tips:after{
+  content:" ";
+  position: absolute;
+  top:3px;
+  left:-15px;
+  height: 0;
+  width: 0;
+  border-bottom:8px solid transparent;
+  border-left:8px solid transparent;
+  border-top:8px solid transparent;
+  border-right:8px solid #fff;
+}
+.tips:before{
+  content:" ";
+  color:#F1F3F6;
+  position: absolute;
+  top:3px;
+  left:-16px;
+  height: 0;
+  width: 0;
+  border-bottom:8px solid transparent;
+  border-left:8px solid transparent;
+  border-top:8px solid transparent;
+  border-right:8px solid #D1DAE0;
+}
 .square{
+  margin-left:50px;
   width: 500px;
   height: 600px;
   float:left;
 }
 .title{
-  font-size:30px;
-  margin : 20px auto;
+  font-size:26px;
+  margin : 10px auto;
 }
 .game{
   display: block;
   width: 200px;
   height: 400px;
   background-color: #F2FAFF;
-  border-left: 1px solid blue;
-  border-right: 1px solid blue;
-  border-bottom: 1px solid blue;
+  border:1px solid #2AAAFE;
+  border-top:none;
   position: relative;
   float:left;
 }
@@ -25,7 +102,7 @@
   position: relative;
   float: left;
   margin-left:40px;
-  border: 1px solid blue;
+  border: 1px solid #2AAAFE;
 }
 .info{
  position: relative;
@@ -40,7 +117,7 @@
   box-sizing: border-box;
 }
 .none {
-  background-color: #F2FAFF;
+  background-color: #FFFFFF;
 }
 .special{
   background-color: green;
@@ -53,4 +130,44 @@
 .done{
   background-color: gray;
   border: 1px solid black;
+}
+.weapon-div{
+  margin-bottom:10px;
+  position: relative;
+  display: inline-block;
+  background-color: #FFF;
+  border:1px solid #D1DAE0;
+  border-radius:6px;
+  width: 50px;
+  height: 40px;
+  font-size:30px;
+  box-shadow: 1px 1px 1px rgba(0,0,0,0.6);
+}
+.weapon-name{
+  position: absolute;
+  top:0;
+  left:0;
+  width: 12px;
+  font-size:8px;
+}
+.weapon-div span{
+  position: absolute;
+  top: -6px;
+  right:-6px;
+  font-size:12px;
+  line-height: 12px;
+  color:#FFF;
+  padding: 1px;
+  background-color: #C40F39;
+  border-radius: 4px;
+  width: 14px;
+  height: 14px;
+  display: block;
+}
+.weapon-icon{
+  position: absolute;
+  top:0;
+  left: 14px;
+  font-size:30px;
+  color:purple;
 }

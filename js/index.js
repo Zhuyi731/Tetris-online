@@ -7,6 +7,12 @@ $(function(){
         }else{//有权限登录
             
         }
+    }); 
+
+    $("#show-tip").on("click",function(){
+        $(".tips").toggleClass("none");
+    }).on("mouseout",function(){
+        // $(".tips").addClass("none");
     });
 
     var local = new Local(socket);

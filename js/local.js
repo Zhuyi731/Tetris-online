@@ -4,7 +4,7 @@
         //定时器
         var timer = null;
         //速度定义
-        var speed = 2000;
+        var speed = 400;
         //游戏对象
         var game = new Game();
         //需要赋值的dom元素
@@ -34,7 +34,6 @@
         var stop = function () {
             clearInterval(timer);
             document.onkeydown = null;
-            alert("you lose!");
         };
 
         var move = function () {
@@ -43,14 +42,19 @@
                     type: getRandom(7),
                     dir: getRandom(4)
                 };
-                socket.emit("next",nextBlock);
+                if(getRandom(100)>90){
+                    nextBlock.type = 11;
+                }
+                socket.emit("next", nextBlock);
                 game.nextStep(nextBlock);
-               
+
                 if (game.isGameOver()) {
+                    socket.emit("gameOver");
+                    game.clearTimer();
                     stop();
                 }
-            }else{
-                socket.emit("move","down");
+            } else {
+                socket.emit("move", "down");
             }
         };
 
@@ -97,7 +101,18 @@
                 $("#waiting").html("");
                 start();
             });
-
+            socket.on("gameOver", function (Win) {
+                console.log("gameOver " + Win);
+                if(!Win){
+                    $("#local_gameOver").html("You Lose!!!");
+                    $("#remote_gameOver").html("You Win!!!");
+                }else{
+                    $("#local_gameOver").html("You Win!!!");
+                    $("#remote_gameOver").html("You Lose!!!");
+                }
+                game.clearTimer();
+                stop();
+            });
         })()
 
 

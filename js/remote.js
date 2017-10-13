@@ -17,13 +17,13 @@
             
         };
         var stop = function () {
-            clearInterval(timer);
-            document.onkeydown = null;
-            alert("you lose!");
+            game.clearTimer();
         };
      
         (function () {
-
+            socket.on("gameOver",function(Win){
+                game.clearTimer();
+            });
             socket.on("init", function (data) {
                 console.log("get init event");
                 start(data);

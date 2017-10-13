@@ -64,12 +64,16 @@ var Game = function () {
     var nextDoms = [];
     //方块数据
     var cur, next;
-
+    //计时的计数器
+    var timer = null;
+    var time = 0;
     /**
      * 
      * @param {*DOM元素} gameDom 
      */
     var init = function (gameDom,curBlock,nextBlock) {
+        timer = setInterval(countTime,1000);
+
         doms = gameDom;
         var fg = fg1 = document.createDocumentFragment();
         var divList;
@@ -112,7 +116,11 @@ var Game = function () {
         refresh(gameDoms, gameData);
     };
 
-
+    var countTime = function(){
+        time ++;
+        doms.timeDiv.innerHTML = time;
+    };
+    
 
     /**
      * 将当前下落的模块赋值进入gameData
@@ -359,6 +367,12 @@ var Game = function () {
         }
     };
     /**
+     * 
+     */
+    var clearTimer = function(){
+        clearInterval(timer);
+    }
+    /**
      * 检查游戏是否结束
      */
     var isGameOver = function () {
@@ -372,6 +386,8 @@ var Game = function () {
 
     };
     //导出接口
+    this.gameOver = gameOver;
+    this.clearTimer= clearTimer;
     this.addScore  = addScore;
     this.done = done;
     this.clearLines = clearLines;
