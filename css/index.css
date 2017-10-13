@@ -1,5 +1,5 @@
 .square{
-  width: 600px;
+  width: 500px;
   height: 600px;
   float:left;
 }
@@ -33,7 +33,7 @@
  margin-left :40px;
  margin-top:10px;
 }
-.none,.current,.done{
+.none,.current,.done,.special{
   width: 20px;
   height: 20px;
   position: absolute;
@@ -41,6 +41,10 @@
 }
 .none {
   background-color: #F2FAFF;
+}
+.special{
+  background-color: green;
+  border: 1px solid green;
 }
 .current{
   background-color: pink;

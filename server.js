@@ -11,14 +11,39 @@ var socketList = [];
 var socketCount = 0;
 
 var userAccount = [{
-    "username":"zhuyi",
-    "password":"123",
-    "nickname":"zzy",
-    "entered":"0",
-    "auth":"0"
+    "username": "zhuyi",
+    "password": "123",
+    "nickname": "zzy",
+    "entered": "0",
+    "auth": "0"
+}, {
+    "username": "123",
+    "password": "123",
+    "nickname": "zzy",
+    "entered": "0",
+    "auth": "0"
+}, {
+    "username": "admin",
+    "password": "123",
+    "nickname": "zzy",
+    "entered": "0",
+    "auth": "0"
 }];
 
+
 io.on("connection", function (socket) {
+
+    socket.count = socketCount;
+    socketList[socketCount] = socket;
+    socketCount++;
+    if (socket.count % 2 == 0) {
+        console.log("waiting: "+socket.count +" " + socketList.length);
+        socket.emit("waiting", "waiting for another player ......");
+    } else {
+        console.log("start: "+socket.count +" " + socketList.length);
+        io.emit("start");
+    }
+
     /**
      * 绑定登录事件
      */
@@ -30,28 +55,90 @@ io.on("connection", function (socket) {
     /**
      * 绑定转发事件
      */
-
+    bindEvents(socket);
 
     /**
      * 客户端断开连接
-     */ 
-    socket.on("disconnect",function(){
-        if(socket.user){
-            var index = socket.user.index;
-            userAccount[index].auth = "0";
-            userAccount[index].entered = "0";
-            console.log(socket.user.username + " left....")
-        }
+     */
+    socket.on("disconnect", function () {
+        // if (socket.user) {
+        //     var index = socket.user.index;
+        //     userAccount[index].auth = "0";
+        //     userAccount[index].entered = "0";
+        //     console.log(socket.user.username + " left....")
+        // }
     });
 });
-var registerLogic = function(socket){
+
+/** 
+ * 
+ * 
+ * 
+*/
+var bindEvents = function (socket) {
+
+    // socket.on("checkAuth", function (name) {
+    //     var index = getUser(name);
+    //     var auth;
+    //     if (index != null && userAccount[index].auth == "1" && userAccount[index].entered == "0") {//说明进入游戏界面了
+    //         userAccount[index].entered = "1";
+    //         socket.user = userAccount[index];
+    //         socket.user.index = index;
+    //         socket.count = socketCount;
+    //         socketCount++;
+    //         if (socketCount % 2 == 1) {
+    //             socket.emit("waiting", "waiting for another player ......");
+    //         } else {
+    //             io.emit("start");
+    //         }
+    //         socketList.push(socket);
+    //         auth = true;
+    //         console.log(userAccount[index].username + "\n   " + auth);
+    //     } else {
+    //         auth = false;
+    //     }
+    //     socket.emit("backAuth", auth);
+    // });
+
+    transport("init", socket);
+    transport("next", socket);
+    transport("move", socket);
+
+};
+
+/**
+ * 
+ * @param {*事件类型} type 
+ * @param {*当前客户端} socket
+ * 向对应的另一个客户端转发事件 
+ */
+function transport(type, socket) {
+    socket.on(type, function (data) {
+        // console.log("transport "+type+" event");
+        // console.log(socket.count +" " + socketList.length);
+        if(type == "move"){
+            console.log(data);            
+        }
+        if (socket.count % 2 == 0) {
+            socketList[socket.count + 1].emit(type, data);
+        } else {
+            socketList[socket.count - 1].emit(type, data);
+        }
+    });
+}
+
+/**
+ * 
+ * @param {*客户端} socket 
+ */
+var registerLogic = function (socket) {
     var mes;
-    socket.on("register",function(data){
+    socket.on("register", function (data) {
         var i = getUser(data.username);
-        if(i != null){
+        if (i != null) {
             mes = "已经被注册了哦";
-        }else{
-            var user = {} ;
+        } else {
+            var user = {};
             user.username = data.username;
             user.password = data.password;
             user.nickname = data.nickname;
@@ -60,63 +147,46 @@ var registerLogic = function(socket){
             userAccount.push(user);
             mes = "注册成功";
         }
-        socket.emit("backRegister",mes);
+        socket.emit("backRegister", mes);
     });
 }
 
-
-
-var loginLogic = function(socket){ //绑定登录逻辑
-    socket.on("login",function(data){
+/**
+ * 
+ * @param {*当前客户端} socket
+ *  绑定登录逻辑
+ */
+var loginLogic = function (socket) { 
+    socket.on("login", function (data) {
         var res = {
-            "auth":false,
-            "username":""
+            "auth": false,
+            "username": ""
         };
-        for(var i = 0 ;i<userAccount.length;i++){
-            if(data.username == userAccount[i].username &&data.password == userAccount[i].password){
+        for (var i = 0; i < userAccount.length; i++) {
+            if (data.username == userAccount[i].username && data.password == userAccount[i].password) {
                 res.auth = true;
                 res.username = userAccount[i].username;
                 userAccount[i].auth = "1";
                 break;
             }
         }
-        socket.emit("loginBack",res);
+        socket.emit("loginBack", true);
     });
-
-    socket.on("checkAuth",function(name){
-        var index = getUser(name);
-        var auth ;
-        if(index != null && userAccount[index].auth == "1" && userAccount[index].entered == "0"){//说明进入游戏界面了
-               userAccount[index].entered = "1";
-               socket.user = userAccount[index];
-               socket.user.index = index;
-               socket.count = socketCount;
-               socketCount ++;
-               socketList.push(socket);
-               auth = true;    
-        }else{
-              auth =  false;    
-        }
-        console.log(userAccount[index].username +"\n   " + auth);
-        socket.emit("backAuth",auth);
-    });
-
 }
 
-var getUser = function(name){
+var getUser = function (name) {
     var user = null;
-    for(var i = 0 ;i<userAccount.length;i++){
-        if(userAccount[i].username == name){
+    for (var i = 0; i < userAccount.length; i++) {
+        if (userAccount[i].username == name) {
             user = userAccount[i];
             break;
         }
     }
-    if(user !=null){
+    if (user != null) {
         return i;
-    }else{
+    } else {
         return null;
     }
 };
-
 
 console.log("websocket sever is running on port: " + PORT);

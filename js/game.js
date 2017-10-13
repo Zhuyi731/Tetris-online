@@ -4,12 +4,32 @@ var Game = function () {
         gameDiv: null,
         nextDiv: null,
         timeDiv: null,
-        scoreDiv: null
+        scoreDiv: null,
+        weaponDiv:null
     };
     //score
     var score = 0;
     //游戏结束标志
     var gameOver = false;
+    //游戏道具
+    var weapons = [
+        {
+            "name":"消行炸弹",
+            "count":0
+        },{
+            "name":"黑幕",
+            "count":0
+        },{
+            "name":"时间静止",
+            "count":0
+        },{
+            "name":"时间加速",
+            "count":0
+        },{
+            "name":"异形方块",
+            "count":2
+        }
+    ];
     //游戏数据
     var nextData = [
         [2, 2, 0, 0],
@@ -49,7 +69,7 @@ var Game = function () {
      * 
      * @param {*DOM元素} gameDom 
      */
-    var init = function (gameDom) {
+    var init = function (gameDom,curBlock,nextBlock) {
         doms = gameDom;
         var fg = fg1 = document.createDocumentFragment();
         var divList;
@@ -83,8 +103,9 @@ var Game = function () {
         }
         doms.nextDiv.appendChild(fg);
 
-        cur = new Square("normal");//生产两个正常方块
-        next = new Square("normal");
+        cur =  new Square(curBlock.type,curBlock.dir);
+        next =  new Square(nextBlock.type,nextBlock.dir);
+        
         nextData = next.data[next.dir];
         setBlockData();
         refresh(nextDoms, nextData);
@@ -112,7 +133,7 @@ var Game = function () {
                 checkPoint(i, j, cur) && (gameData[cur.pos.x + i][cur.pos.y + j] = 0);
             }
         }
-    }
+    };
     /**
      * 
      * @param {*对应的DOM节点数组} doms 
@@ -125,8 +146,10 @@ var Game = function () {
                     doms[i][j].className = "none";
                 } else if (data[i][j] == 1) {
                     doms[i][j].className = "done";
-                } else {
+                } else if(data[i][j] == 2){
                     doms[i][j].className = "current";
+                }else{
+                    doms[i][j].className = "special";
                 }
             }
         }
@@ -139,7 +162,7 @@ var Game = function () {
     var checkPoint = function (i, j, block) {
         if (block.pos.x + i >= gameData.length || block.pos.x + i < 0
             || block.pos.y + j >= gameData[0].length || block.pos.y + j < 0
-            || gameData[block.pos.x + i][block.pos.y + j] == 1) {
+            || gameData[block.pos.x + i][block.pos.y + j] == 1 || gameData[block.pos.x + i][block.pos.y + j] == 4) {
             return false;
         } else {
             return true;
@@ -160,56 +183,82 @@ var Game = function () {
             }
         }
         return ret;
-    }
-
-    var nextStep = function () {
+    };
+    /**
+     * 生成下一个方块
+     */
+    var nextStep = function (nextBlock) {
         cur = next;
-        if(checkBlock(cur)){
-        next = new Square("normal");
-        nextData = next.data[next.dir];
-        setBlockData();
-        refresh(nextDoms, nextData);
-        refresh(gameDoms, gameData);
-        }else{//说明已经无法下降了
+        if (checkBlock(cur)) {
+            clearBlockData();
+            next = new Square(nextBlock.type,nextBlock.dir);
+            nextData = next.data[next.dir];
+            setBlockData();
+            refresh(nextDoms, nextData);
+            refresh(gameDoms, gameData);
+        } else {//说明已经无法下降了
             gameOver = true;
         }
+    };
+    /**
+     * 
+     */
+    var getWeapon = function(){
+        var weaponIndex = getRandom(weapons.length);
+        weapons[weaponIndex].count++;
+        $wepDiv = $(doms.weaponDiv);
+        $wepDiv.find(".weapon"+weaponIndex).html(weapons[weaponIndex].count);
+    };
+    function getRandom(up) {
+        //parseInt  是为了解决 -0 的情况
+        return parseInt(Math.ceil(Math.random() * up - 1));
     }
     /**
      * 消行
      */
     var clearLines = function () {
-        var all ;
+        var all,special;
         var linesCount = 0;
+        var specialCount = 0;
         for (var i = gameData.length - 1; i >= 0; i--) {
-            all = true;
+            all = true; special=0;
             for (var j = 0; j < gameData[0].length; j++) {
                 if (gameData[i][j] == "0") {
                     all = false;
                     break;
                 }
+                if(gameData[i][j] == "4"){
+                    special ++;
+                }
             }
             if (all) {
-                for(var n = i ;n>0 ;n--){
-                    for(var m = 0;m<gameData[0].length;m++){
-                        gameData[n][m] = gameData[n-1][m];
+                for (var n = i; n > 0; n--) {
+                    for (var m = 0; m < gameData[0].length; m++) {
+                        gameData[n][m] = gameData[n - 1][m];
                     }
                 }
-                for(var m = 0;m<gameData[0].length;m++){
+                for (var m = 0; m < gameData[0].length; m++) {
                     gameData[0][m] = 0;
                 }
                 linesCount++;
                 i++;
+                if(special !=0){
+                    specialCount += special;
+                }
             }
         }
+        if(specialCount != 0){
+            getWeapon();
+        }
         return linesCount;
-    }
+    };
 
     /**
      * 
      */
-    var addScore = function(lines){
-        var scoreLevel = [0,10,30,100,180,360];
-        score += scoreLevel[lines]; 
+    var addScore = function (lines) {
+        var scoreLevel = [0, 10, 30, 100, 180, 360];
+        score += scoreLevel[lines];
         doms.scoreDiv.innerHTML = score;
     };
     /**
@@ -221,16 +270,18 @@ var Game = function () {
             for (var j = 0; j < cur.data[cur.dir][0].length; j++) {
                 if (cur.data[cur.dir][i][j] == 2) {
                     gameData[cur.pos.x + i][cur.pos.y + j] = 1;
+                }else if(cur.data[cur.dir][i][j] == 3){
+                    gameData[cur.pos.x + i][cur.pos.y + j] = 4;
                 }
             }
         }
+        setBlockData();
         refresh(gameDoms, gameData);
-        nextStep();
         var lines = clearLines();
-        if( lines!= 0){
+        if (lines != 0) {
             addScore(lines);
         }
-    }
+    };
 
     /**
      * 
@@ -310,17 +361,20 @@ var Game = function () {
     /**
      * 检查游戏是否结束
      */
-    var isGameOver = function(){
+    var isGameOver = function () {
         var over = false;
-        for(var i = 0;i<gameData[0].length;i++){
-            if(gameData[1][i] == 1){
+        for (var i = 0; i < gameData[0].length; i++) {
+            if (gameData[1][i] == 1) {
                 return true;
             }
         }
         return false;
-        
+
     };
     //导出接口
+    this.addScore  = addScore;
+    this.done = done;
+    this.clearLines = clearLines;
     this.isGameOver = isGameOver;
     this.nextStep = nextStep;
     this.canMove = canMove;

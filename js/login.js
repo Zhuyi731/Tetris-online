@@ -5,8 +5,20 @@ var socket = io("ws://localhost:3000");
     };
 
     function initEvent(){
+        document.onkeydown = function(e){
+            console.log(e.keycode||e.which);
+            var keyCode = e.keycode || e.which;
+            if(keyCode == 13){
+                if($("#login-box").attr("class").indexOf("none") == -1){
+                    $("#login").click();
+                }else{
+                    $("#onRegister").click();
+                }
+            }
+        };
+
+
         socket.on("loginBack",function(data){
-            console.log(data);
             if(data.auth == true){
                 window.location.href = "./index.html?"+data.username;
             }else{
@@ -23,7 +35,7 @@ var socket = io("ws://localhost:3000");
 
         $("#login").on("click", function () {
             var data = getLoginData();
-            socket.emit("login",data);
+            data && socket.emit("login",data);
         });
 
         $("#register").on("click",function(){
@@ -38,7 +50,7 @@ var socket = io("ws://localhost:3000");
 
         $("#onRegister").on("click",function(){
             var data = getRegisterData();
-            socket.emit("register",data);
+            data && socket.emit("register",data);
         });
     }
 
@@ -47,15 +59,23 @@ var socket = io("ws://localhost:3000");
         $("#login-box").find("input").each(function(){
             data[this.name] = this.value;
         });
+        if(data.username == "" || data.password == ""){
+            alert("账户名或密码不能为空");
+            return null;
+        }
         console.log(data);
         return data ;
     }
+
     function getRegisterData(){
         var data = {};
         $("#register-box").find("input").each(function(){
             data[this.name] = this.value;
         });
-        console.log(data);
+        if(data.username == "" || data.password == "" ||data.nickname == ""){
+            alert("请将信息填写完整");
+            return null;
+        }
         return data ;
     }
 

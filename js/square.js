@@ -2,49 +2,33 @@
     var that = this;
 
 
-    var Square = function (type) {
-
-        if (type == "special") {
-            this.data = that.squareData[7 + getRandom(4)];
-        } else {
-            this.data = that.squareData[getRandom(7)];
-        }
-        this.dir = getRandom(4);
+    var Square = function (type,dir) {
+        this.data = that.squareData[type];
+        this.dir = dir;
         this.pos = {
             x: 0,
             y: 3
         };
 
-        /**
-         * 
-         * @param {*} up 
-         * 返回 [0,up) 的随机整数
-         */
-        function getRandom(up) {
-            //parseInt  是为了解决 -0 的情况
-            return parseInt(Math.ceil(Math.random() * up - 1));
-        }
-    }
-
+    };
 
     Square.prototype.move = function (order) {
-            switch (order) {
-                case "down":
-                    this.pos.x++;
-                    break;
-                case "left":
-                    this.pos.y--;
-                    break;
-                case "right":
-                    this.pos.y++;
-                    break;
-                case "up":
-                    this.dir = (this.dir + 1) % 4;
-                    break;
-                default:
-                    break;
-            }
-      
+        switch (order) {
+            case "down":
+                this.pos.x++;
+                break;
+            case "left":
+                this.pos.y--;
+                break;
+            case "right":
+                this.pos.y++;
+                break;
+            case "up":
+                this.dir = (this.dir + 1) % 4;
+                break;
+            default:
+                break;
+        }
     };
 
 
@@ -387,6 +371,35 @@
             [2, 2, 2, 2],
             [2, 2, 2, 2],
             [2, 2, 2, 2]
+        ]
+    ];
+    /**
+     *  口口口口 
+     *  口口口口 
+     *  口口口口 
+     *  口口口口 
+     */
+    squareData[11] = [
+        [
+            [0, 2, 0, 0],
+            [2, 3, 2, 0],
+            [0, 2, 0, 0],
+            [0, 0, 0, 0]
+        ], [
+            [0, 2, 0, 0],
+            [2, 3, 2, 0],
+            [0, 2, 0, 0],
+            [0, 0, 0, 0]
+        ], [
+            [0, 2, 0, 0],
+            [2, 3, 2, 0],
+            [0, 2, 0, 0],
+            [0, 0, 0, 0]
+        ], [
+            [0, 2, 0, 0],
+            [2, 3, 2, 0],
+            [0, 2, 0, 0],
+            [0, 0, 0, 0]
         ]
     ];
 

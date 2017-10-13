@@ -12,6 +12,13 @@
   <div id="waiting"></div>
   <div class="square" id="local">
     <div class="title">我的游戏区域</div>
+    <div class="weapon" id="local_weapon">
+      炸弹：<span class="weapon0">0</span>
+      黑幕：<span class="weapon1">0</span>
+      时间静止：<span class="weapon2">0</span>
+      时间加速：<span class="weapon3">0</span>
+      异形方块：<span class="weapon4">0</span>      
+    </div>
     <div class="game" id="local_game"></div>
     <div class="next" id="local_next"></div>
     <div class="info">
@@ -22,6 +29,13 @@
   </div>
   <div class="square" id="remote">
       <div class="title">ta的游戏区域</div>
+      <div class="weapon" id="remote_weapon">
+          炸弹：<span class="weapon0">0</span>
+          黑幕：<span class="weapon1">0</span>
+          时间静止：<span class="weapon2">0</span>
+          时间加速：<span class="weapon3">0</span>
+          异形方块：<span class="weapon4">0</span>      
+      </div>
       <div class="game" id="remote_game"></div>
       <div class="next" id="remote_next"></div>
       <div class="info">
@@ -30,7 +44,6 @@
         <div class="" id="remote_gameOver"></div>
       </div>
   </div>
-    
 
     <script src="lib/socket.io.js"></script>  
     <script src="lib/jquery.js"></script>
