@@ -112,7 +112,8 @@ var bindEvents = function (socket) {
     transport("init", socket);
     transport("next", socket);
     transport("move", socket);
-
+    transport("weaponData", socket);
+    transport("useWeapon",socket);
 
 };
 
@@ -126,8 +127,8 @@ function transport(type, socket) {
     socket.on(type, function (data) {
         // console.log("transport "+type+" event");
         // console.log(socket.count +" " + socketList.length);
-        if (type == "move") {
-            // console.log(data);            
+        if (type == "useWeapon") {
+            console.log(data);            
         }
         if (socket.count % 2 == 0) {
             socketList[socket.count + 1].emit(type, data);

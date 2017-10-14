@@ -41,8 +41,12 @@
             socket.on("down",function(){
                 game.move("down");
             });
-            
-        })()
+
+            socket.on("weaponData",function(data){
+                game.setWeaponData(data);
+            });
+          
+        })();
 
 
         this.start = start;

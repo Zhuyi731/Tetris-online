@@ -5,7 +5,7 @@ var Game = function () {
         nextDiv: null,
         timeDiv: null,
         scoreDiv: null,
-        weaponDiv:null
+        weaponDiv: null
     };
     //score
     var score = 0;
@@ -14,20 +14,20 @@ var Game = function () {
     //游戏道具
     var weapons = [
         {
-            "name":"消行炸弹",
-            "count":0
-        },{
-            "name":"黑幕",
-            "count":0
-        },{
-            "name":"时间静止",
-            "count":0
-        },{
-            "name":"时间加速",
-            "count":0
-        },{
-            "name":"异形方块",
-            "count":2
+            "name": "消行炸弹",
+            "count": 0
+        }, {
+            "name": "黑幕",
+            "count": 3
+        }, {
+            "name": "时间静止",
+            "count": 3
+        }, {
+            "name": "时间加速",
+            "count": 3
+        }, {
+            "name": "异形方块",
+            "count": 2
         }
     ];
     //游戏数据
@@ -71,8 +71,8 @@ var Game = function () {
      * 
      * @param {*DOM元素} gameDom 
      */
-    var init = function (gameDom,curBlock,nextBlock) {
-        timer = setInterval(countTime,1000);
+    var init = function (gameDom, curBlock, nextBlock) {
+        timer = setInterval(countTime, 1000);
 
         doms = gameDom;
         var fg = fg1 = document.createDocumentFragment();
@@ -107,20 +107,21 @@ var Game = function () {
         }
         doms.nextDiv.appendChild(fg);
 
-        cur =  new Square(curBlock.type,curBlock.dir);
-        next =  new Square(nextBlock.type,nextBlock.dir);
-        
+        cur = new Square(curBlock.type, curBlock.dir);
+        next = new Square(nextBlock.type, nextBlock.dir);
+
         nextData = next.data[next.dir];
         setBlockData();
         refresh(nextDoms, nextData);
         refresh(gameDoms, gameData);
+        refreshWeapon();
     };
 
-    var countTime = function(){
-        time ++;
+    var countTime = function () {
+        time++;
         doms.timeDiv.innerHTML = time;
     };
-    
+
 
     /**
      * 将当前下落的模块赋值进入gameData
@@ -154,9 +155,9 @@ var Game = function () {
                     doms[i][j].className = "none";
                 } else if (data[i][j] == 1) {
                     doms[i][j].className = "done";
-                } else if(data[i][j] == 2){
+                } else if (data[i][j] == 2) {
                     doms[i][j].className = "current";
-                }else{
+                } else {
                     doms[i][j].className = "special";
                 }
             }
@@ -199,7 +200,7 @@ var Game = function () {
         cur = next;
         if (checkBlock(cur)) {
             clearBlockData();
-            next = new Square(nextBlock.type,nextBlock.dir);
+            next = new Square(nextBlock.type, nextBlock.dir);
             nextData = next.data[next.dir];
             setBlockData();
             refresh(nextDoms, nextData);
@@ -209,13 +210,24 @@ var Game = function () {
         }
     };
     /**
-     * 
+     * 获得一个随机的道具
      */
-    var getWeapon = function(){
+    var getWeapon = function () {
         var weaponIndex = getRandom(weapons.length);
         weapons[weaponIndex].count++;
+        refreshWeapon();
+        // $wepDiv = $(doms.weaponDiv);
+        // $wepDiv.find(".weapon"+weaponIndex).html(weapons[weaponIndex].count);
+    };
+    /**
+     * 
+     * @param {*} up 
+     */
+    var refreshWeapon = function () {
         $wepDiv = $(doms.weaponDiv);
-        $wepDiv.find(".weapon"+weaponIndex).html(weapons[weaponIndex].count);
+        for (var i = 0; i < weapons.length; i++) {
+            $wepDiv.find(".weapon" + i).html(weapons[i].count);
+        }
     };
     function getRandom(up) {
         //parseInt  是为了解决 -0 的情况
@@ -225,18 +237,18 @@ var Game = function () {
      * 消行
      */
     var clearLines = function () {
-        var all,special;
+        var all, special;
         var linesCount = 0;
         var specialCount = 0;
         for (var i = gameData.length - 1; i >= 0; i--) {
-            all = true; special=0;
+            all = true; special = 0;
             for (var j = 0; j < gameData[0].length; j++) {
                 if (gameData[i][j] == "0") {
                     all = false;
                     break;
                 }
-                if(gameData[i][j] == "4"){
-                    special ++;
+                if (gameData[i][j] == "4") {
+                    special++;
                 }
             }
             if (all) {
@@ -250,12 +262,12 @@ var Game = function () {
                 }
                 linesCount++;
                 i++;
-                if(special !=0){
+                if (special != 0) {
                     specialCount += special;
                 }
             }
         }
-        if(specialCount != 0){
+        if (specialCount != 0) {
             getWeapon();
         }
         return linesCount;
@@ -278,7 +290,7 @@ var Game = function () {
             for (var j = 0; j < cur.data[cur.dir][0].length; j++) {
                 if (cur.data[cur.dir][i][j] == 2) {
                     gameData[cur.pos.x + i][cur.pos.y + j] = 1;
-                }else if(cur.data[cur.dir][i][j] == 3){
+                } else if (cur.data[cur.dir][i][j] == 3) {
                     gameData[cur.pos.x + i][cur.pos.y + j] = 4;
                 }
             }
@@ -369,7 +381,7 @@ var Game = function () {
     /**
      * 
      */
-    var clearTimer = function(){
+    var clearTimer = function () {
         clearInterval(timer);
     }
     /**
@@ -385,10 +397,37 @@ var Game = function () {
         return false;
 
     };
+    /**
+     * 获取道具的数据
+     */
+    var getWeaponData = function () {
+        return weapons;
+    };
+    /**
+     * 设置weapon数据 
+     * */
+    var setWeaponData = function (data) {
+        weapons = data;
+        refreshWeapon();
+    };
+    /**
+     * 使用道具
+     */
+    var useWeapon = function (index) {
+        if (weapons[index].count > 0) {
+            weapons[index].count--;
+        } else {
+            console.log("弹药不足");
+        }
+        refreshWeapon();
+    };
     //导出接口
+    this.useWeapon = useWeapon;
+    this.getWeaponData = getWeaponData;
+    this.setWeaponData = setWeaponData;
     this.gameOver = gameOver;
-    this.clearTimer= clearTimer;
-    this.addScore  = addScore;
+    this.clearTimer = clearTimer;
+    this.addScore = addScore;
     this.done = done;
     this.clearLines = clearLines;
     this.isGameOver = isGameOver;

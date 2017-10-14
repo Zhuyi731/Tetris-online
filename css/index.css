@@ -171,3 +171,12 @@ body{
   font-size:30px;
   color:purple;
 }
+.black-cover{
+  position: absolute;
+  top:320px;
+  width: 200px;
+  height: 200px;
+  background-color: #000000;
+  z-index:100;
+  opacity:0.5;
+}
