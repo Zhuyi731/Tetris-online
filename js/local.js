@@ -4,7 +4,7 @@
         //定时器
         var timer = null;
         //速度定义
-        var NORMALDOWNSPEED = 400;
+        var NORMALDOWNSPEED = 600;
         var speed = NORMALDOWNSPEED;
         //是否产生异形方块
         var isUgly = 0;
@@ -17,7 +17,9 @@
             timeDiv: $("#local_time")[0],
             scoreDiv: $("#local_score")[0],
             resultDiv: $("#local_gameOver")[0],
-            weaponDiv: $("#local_weapon")[0]
+            weaponDiv: $("#local_weapon")[0],
+            arrowDiv:$("#local_arrow")[0],
+            twinkleDiv:$("#local_twinkle_line")[0]
         };
         /**
          * 本地区域开始游戏
@@ -48,7 +50,7 @@
                     type: getRandom(7),
                     dir: getRandom(4)
                 };
-                if (getRandom(100) >= 90) {
+                if (getRandom(100) >= 30) {
                     nextBlock.type = 11;
                 }
                 if(isUgly){
@@ -97,6 +99,7 @@
                     case 81://Q
                         socket.emit("useWeapon", "0");
                         game.useWeapon(0);
+                        bomb();
                         break;
                     case 87://W
                         socket.emit("useWeapon", "1");
@@ -121,11 +124,10 @@
             };
         }
 
-
         /**
          * 绑定socket事件
          */
-        (function () {
+      
             socket.on("waiting", function (str) {
                 $("#waiting").html(str);
             });
@@ -167,22 +169,30 @@
                 }
             });
 
-
-        })()
-
-
+        /**
+         * 炸弹道具互动
+         */    
+        var bomb = function(){
+            var selectIndex = game.selectAnimate();
+            var lineData = game.deleteLine(selectIndex);
+            socket.emit("deleteLine",selectIndex);
+            socket.emit("addLine",lineData); 
+        };
+            
         /**
          * 黑幕道具互动
          * @prama{*local|remote 表示黑幕生成的位置}position
-         *  opacityTop opacityDown 黑幕透明度上下限
+         *  OPACITYTOP OPACITYDOWN 黑幕透明度上下限
          * opacity 透明度
          * coverDiv Dom
          * coverTime 覆盖时间  可叠加
          * coverTimer 计时器
          */
-        var opacityTop = 1.0;
-        var opacityDown = 0.85;
-        var WEAPONTIME = 2000;
+        var OPACITYTOP = 1.0;
+        var OPACITYDOWN = 0.85;
+        var MOVETOP = 320;
+        var MOVEDOWN = 180;
+        var WEAPONTIME = 6000;
         var opacity = {
             local: 0.8,
             remote: 0.8
@@ -200,8 +210,8 @@
             local: null,
             remote: null
         }
-        function blackCover(position) {
-            coverDiv[position].removeClass("none");
+       var  blackCover =  function(position) {
+            coverDiv[position].removeClass("hide");
             var top;
             var dir = -5;
             if (coverTime[position] != 0) {
@@ -215,17 +225,17 @@
                 coverTime[position] -= 50;
                 if (coverTime[position] == 0) {
                     clearInterval(coverTimer[position]);
-                    coverDiv[position].addClass("none");
+                    coverDiv[position].addClass("hide");
                 }
             }, 50);
 
             function changeOpacity(opa) {
                 var cover = coverDiv[opa];
                 opacity[opa] = parseFloat(opacity[opa]) + opacityDir;
-                if (opacity[opa] < opacityDown) {
+                if (opacity[opa] < OPACITYDOWN) {
                     opacityDir = 0.005;
                 }
-                if (opacity[opa] > opacityTop) {
+                if (opacity[opa] > OPACITYTOP) {
                     opacityDir = -0.005;
                 }
                 cover.css("opacity", opacity[opa]);
@@ -233,9 +243,9 @@
 
             function changeTop(cover) {
                 top = parseInt(cover.css("top").split("px")[0]) + dir;
-                if (top >= 220 && top <= 320) {
+                if (top >= MOVEDOWN && top <= MOVETOP) {
                     cover.css("top", top + "px");
-                } else if (top < 220) {
+                } else if (top < MOVEDOWN) {
                     dir = 5;
                 } else {
                     dir = -5;
@@ -248,9 +258,9 @@
          * PAUSETIME 静止时间
          * lefttime 剩余的时间
          */
-        var PAUSETIME = 5000;
+        var PAUSETIME = 6000;
         var leftTime2;
-        function pause() {
+        var pause = function () {
             if (leftTime2 > 0) {
                 leftTime2 += PAUSETIME;
                 return;
@@ -264,8 +274,7 @@
                     clearInterval(tempTimer);
                 }
             }, 50);
-
-        }
+        };
 
         /**
          * 加速互动
@@ -273,10 +282,10 @@
          * DOWNSPEED 下降速度
          * leftTime3 剩余加速时间
          */
-        var SPEEDUPTIME = 2500;
+        var SPEEDUPTIME = 3000;
         var leftTime3;
         var DOWNSPEED = 100;
-        function accelerate() {
+        var accelerate = function () {
             if (leftTime3 > 0) {
                 leftTime3 += SPEEDUPTIME;
                 return;
@@ -294,19 +303,21 @@
                     clearInterval(tempTimer);
                 }
             }, 50);
-        }
+        };
 
         /**
          * 异形道具互动
          */
-        function ugly(){
+        var ugly = function (){
             isUgly ++;
-        }
-
+        };
 
 
         this.start = start;
-    };
+        window.selectAnimate = game.selectAnimate;
+
+
+    };  //end of Local
 
 
     /**

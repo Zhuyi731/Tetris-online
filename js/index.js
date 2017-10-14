@@ -10,12 +10,13 @@ $(function(){
     }); 
 
     $("#show-tip").on("click",function(){
-        $(".tips").toggleClass("none");
+        $(".tips").toggleClass("hide");
     }).on("mouseout",function(){
         // $(".tips").addClass("none");
     });
 
     var local = new Local(socket);
     var remote = new Remote(socket);
+    local.start();
 
 });

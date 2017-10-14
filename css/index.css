@@ -2,8 +2,8 @@ body{
   background:#F1F3F6;
   color:#69777E;
 }
-.none{
-  display: none;
+.hide{
+  display: none !important;
 }
 .clearfix { 
     *zoom: 1; 
@@ -117,7 +117,7 @@ body{
   box-sizing: border-box;
 }
 .none {
-  background-color: #FFFFFF;
+  background-color: #F2FAFF;
 }
 .special{
   background-color: green;
@@ -179,4 +179,19 @@ body{
   background-color: #000000;
   z-index:100;
   opacity:0.5;
+}
+.arrow{
+  font-weight: bold;
+  position: absolute;
+  right: -20px;
+  bottom: 0;
+}
+.twinkle-line{
+  position: absolute;
+  left:0;
+  bottom:0;
+  width: 200px;
+  height: 20px; 
+  background-color: #D1DAE0;
+  z-index:100;
 }

@@ -5,7 +5,9 @@ var Game = function () {
         nextDiv: null,
         timeDiv: null,
         scoreDiv: null,
-        weaponDiv: null
+        weaponDiv: null,
+        arrowDiv: null,
+        twinkleDiv:null
     };
     //score
     var score = 0;
@@ -15,7 +17,7 @@ var Game = function () {
     var weapons = [
         {
             "name": "消行炸弹",
-            "count": 0
+            "count": 3
         }, {
             "name": "黑幕",
             "count": 3
@@ -421,7 +423,110 @@ var Game = function () {
         }
         refreshWeapon();
     };
+
+    /**
+     * 
+     * 炸弹道具的动画
+     * return 消除的行数下标
+     */
+    var selectAnimate = function () {
+        var topHeight;
+        var downHeight = 0;
+        for (var i = gameData.length - 1; i >= 0; i--) {
+            var allFlag = true;
+            for (var j = 0; j < gameData[0].length; j++) {
+                if (gameData[i][j] == 1 || gameData[i][j] == 4) { //说明这一行不为空
+                    allFlag = false;
+                    break;
+                }
+            }
+            if (allFlag) {
+                topHeight = (18-i) * 20;
+                break;
+            }
+        }
+        if(topHeight == -20){
+            return null;
+        }
+        var arrowDiv = $(doms.arrowDiv);
+        arrowDiv.removeClass("hide");
+        var timerSpeed = 100;
+        var timeCount = getRandom(5)*200 + 3000;
+        var dir = 20;
+        var flag = 0;
+        var tempTimer = setInterval(choose, timerSpeed);
+        function choose(){
+            var bottom = parseInt(arrowDiv.css("bottom").split("px")[0]);
+            if (bottom == topHeight) {
+                dir = -20;
+            } else if (bottom == downHeight) {
+                dir = 20;
+            }
+            arrowDiv.css("bottom", bottom + dir);
+            timeCount -= 200;
+            if(timeCount<1000 && flag ==2){
+                timerSpeed = 600;
+                clearInterval(tempTimer);
+                tempTimer = setInterval(choose, timerSpeed);
+            }else if(timeCount <1600 && flag ==1){
+                flag ++;
+                timerSpeed = 400;
+                clearInterval(tempTimer);
+                tempTimer = setInterval(choose, timerSpeed);
+            }else if(timeCount <2400 && flag ==0){
+                flag ++;
+                timerSpeed = 200;
+                clearInterval(tempTimer);
+                tempTimer = setInterval(choose, timerSpeed);
+            }
+            if(timeCount ==0){
+                clearInterval(tempTimer);
+                var index = parseInt(19-(arrowDiv.css("bottom").split("px")[0])/20);
+                deleteLine(index);
+                return index; 
+            }
+        }
+    };
+
+
+    /**
+     * 
+     * @param {*删除的行数} index 
+     */
+    var deleteLine = function(index){
+        var data = gameData[index];
+        var ct = 0;
+        var twinkleDiv =$(doms.twinkleDiv);
+        twinkleDiv.css("bottom",(19-index)*20+"px");
+        twinkleDiv.removeClass("hide");      
+        var twinkleTimer = setInterval(function(){
+            if(ct == 0){
+               twinkleDiv.css("background-color","#D1DAE0");            
+            }else{
+               twinkleDiv.css("background-color","#F2FAFF");                
+            }
+            ct = (ct+1)%2;
+        },300);
+        setTimeout(function(){
+            clearTimeout(twinkleTimer);
+            twinkleDiv.addClass("hide");
+            for(var i = index ;i>0 ;i--){
+                for(var j=0;j<gameData[0].length;j++)
+                    gameData[i][j] = gameData[i-1][j];
+            }
+            for(var j=0;j<gameData[0].length;j++){
+                gameData[0][j] = 0;
+            }
+            clearBlockData();
+            setBlockData();
+            refresh(gameDoms, gameData);
+            $(doms.arrowDiv).addClass("hide");
+        },2000);
+        return data;
+    };
+
     //导出接口
+    this.selectAnimate = selectAnimate;
     this.useWeapon = useWeapon;
     this.getWeaponData = getWeaponData;
     this.setWeaponData = setWeaponData;

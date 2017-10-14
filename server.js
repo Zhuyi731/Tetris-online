@@ -114,6 +114,7 @@ var bindEvents = function (socket) {
     transport("move", socket);
     transport("weaponData", socket);
     transport("useWeapon",socket);
+    transport("deleteLine",socket);
 
 };
 
