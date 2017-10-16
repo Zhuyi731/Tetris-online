@@ -70,7 +70,7 @@
                 socket.emit("weaponData", weaponData);
                 socket.emit("next", nextBlock);
                 game.nextStep(nextBlock);
-
+                
                 if (game.isGameOver()) {
                     socket.emit("gameOver");
                     game.clearTimer();
@@ -99,7 +99,7 @@
             });
             $("#sendMessage").on("click", function () {
                 var text = $("#messageInput").val();
-                message( text + " ", "message");
+                message(text + " ", "message");
                 $("#messageInput").val("");
             });
         })();
@@ -112,7 +112,7 @@
          * @param {*其他参数} other 
          */
         var message = function (text, type, other) {
-
+            var addScrollTop = 21;
             switch (type) {
                 case "enter":
                     $("#game-message").append("<p class='message-div'>" + text + "</p>");
@@ -127,8 +127,10 @@
                     if (other == 0) {
                         str += ",<span class='he-say'>" +
                             nickName.remote + "</span>被你炸懵了!";
+                        addScrollTop = 41;
                     } else if (other == 1) {
                         str += ",眼前的黑不是黑,你说的白是什么白.";
+                        addScrollTop = 41;
                     } else if (other == 2) {
                         str += "......";
                     } else if (other == 3) {
@@ -145,8 +147,8 @@
 
             }
             messageCount++;
-            if (messageCount > 12) {
-                scrollTop += 20;
+            if (messageCount > 9) {
+                scrollTop += addScrollTop;
                 $("#game-message").scrollTop(scrollTop);
             }
         };
@@ -157,21 +159,24 @@
          * @param {*} other 
          */
         var recvMessage = function (text, type, other) {
+            var addScrollTop = 21;
             switch (type) {
                 case "enter":
                     $("#game-message").append("<p class='message-div'>" + text + "</p>");
                     break;
                 case "message":
-                    $("#game-message").append("<p class='message-div'><span class='he-say'>"+nickName.remote+"说:</span>" + text + "</p>");
+                    $("#game-message").append("<p class='message-div'><span class='he-say'>" + nickName.remote + "说:</span>" + text + "</p>");
                     break;
                 case "weapon":
-                    var str = "<span class='he-say'>"+ nickName.local +"</span> 对 <span class='you-say'>你</span>使用了道具<span class='use-weapon" + 
-                    other + "'>" + weaponNames[other] + "</span>";
+                    var str = "<span class='he-say'>" + nickName.local + "</span> 对 <span class='you-say'>你</span>使用了道具<span class='use-weapon" +
+                        other + "'>" + weaponNames[other] + "</span>";
                     if (other == 0) {
                         str += ",<span class='he-say'>" +
                             nickName.remote + "</span>你被炸懵了!";
+                        addScrollTop = 41;
                     } else if (other == 1) {
                         str += ",眼前的黑不是黑,你说的白是什么白.";
+                        addScrollTop = 41;
                     } else if (other == 2) {
                         str += "......";
                     } else if (other == 3) {
@@ -183,8 +188,16 @@
                     }
                     $("#game-message").append("<p class='message-div'>" + str + "</p>");
                     break;
+                case "gameOver":
+                     $("#game-message").append("<p class='message-div'>" + text + "</p>");
+                     addScrollTop = 41;
                 default:
                     break;
+            }
+            messageCount++;
+            if (messageCount > 9) {
+                scrollTop += addScrollTop;
+                $("#game-message").scrollTop(scrollTop);
             }
         }
         /**
@@ -215,29 +228,41 @@
                         game.move("space");
                         break;
                     case 81://Q
-                        socket.emit("useWeapon", "0");
                         bomb();
                         break;
                     case 87://W
-                        socket.emit("useWeapon", "1");
-                        game.useWeapon(1);
-                        message("", "weapon", 1);
-                        blackCover("remote");
+                        if (game.useWeapon(1)) {
+                            socket.emit("useWeapon", "1");
+                            message("", "weapon", 1);
+                            blackCover("remote");
+                        } else {
+                            messeage("", "weaponLack", 1);
+                        }
                         break;
                     case 69://E
-                        socket.emit("useWeapon", "2");
-                        message("", "weapon", 2);
-                        game.useWeapon(2);
+                        if (game.useWeapon(2)) {
+                            socket.emit("useWeapon", "2");
+
+                            message("", "weapon", 2);
+                        } else {
+                            messeage("", "weaponLack", 2);
+                        }
                         break;
                     case 82://R
-                        socket.emit("useWeapon", "3");
-                        message("", "weapon", 3);
-                        game.useWeapon(3);
+                        if (game.useWeapon(3)) {
+                            socket.emit("useWeapon", "3");
+                            message("", "weapon", 3);
+                        } else {
+                            messeage("", "weaponLack", 3);
+                        }
                         break;
                     case 84://T
-                        socket.emit("useWeapon", "4");
-                        message("", "weapon", 4);
-                        game.useWeapon(4);
+                        if (game.useWeapon(4)) {
+                            socket.emit("useWeapon", "4");
+                            message("", "weapon", 4);
+                        } else {
+                            message("", "weaponLack", "4");
+                        }
                         break;
                     default:
                         break;
@@ -248,6 +273,9 @@
         /**
          * 绑定socket事件
          */
+        socket.on("playerLeft",function(){
+            recvMessage("你的对手<span class = 'you-say'> "+nickName.remote+"</span> 离开了游戏，你赢了！","gameOver");
+        });
         socket.on("message", function (str) {
             recvMessage(str, "message");
         });
@@ -280,23 +308,23 @@
         socket.on("useWeapon", function (type) { //说明被攻击了
             switch (type) {
                 case "0":
-                    recvMessage("","weapon",0);
+                    recvMessage("", "weapon", 0);
                     break;
                 case "1":
                     blackCover("local");
-                    recvMessage("","weapon",1);
+                    recvMessage("", "weapon", 1);
                     break;
                 case "2":
                     pause();
-                    recvMessage("","weapon",2);
+                    recvMessage("", "weapon", 2);
                     break;
                 case "3":
                     accelerate();
-                    recvMessage("","weapon",3);
+                    recvMessage("", "weapon", 3);
                     break;
                 case "4":
                     ugly();
-                    recvMessage("","weapon",4);
+                    recvMessage("", "weapon", 4);
                     break;
                 default:
                     break;
@@ -328,7 +356,7 @@
                     }
                 }, 50);
                 message("", "weapon", 0);
-
+                socket.emit("useWeapon", "0");
                 game.useWeapon(0);
             } else {
 

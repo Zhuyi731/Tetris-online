@@ -32,11 +32,9 @@ var userAccount = [{
 
 
 io.on("connection", function (socket) {
-
-  
     socket.on("addLine", function (lineData) {
         var data = {};
-        data.lineData =lineData;
+        data.lineData = lineData;
         if (socket.count % 2 == 0) {
             data.flag = "local";
             socketList[socket.count + 1].emit("addLine", data);
@@ -46,7 +44,7 @@ io.on("connection", function (socket) {
             data.flag = "local";
             socketList[socket.count - 1].emit("addLine", data);
             data.flag = "remote";
-            socketList[socket.count ].emit("addLine", data);
+            socketList[socket.count].emit("addLine", data);
         }
     });
     socket.on("gameOver", function (lineData) {
@@ -55,7 +53,7 @@ io.on("connection", function (socket) {
             socketList[socket.count].emit("gameOver", false);
         } else {
             socketList[socket.count - 1].emit("gameOver", true);
-            socketList[socket.count ].emit("gameOver", false);
+            socketList[socket.count].emit("gameOver", false);
         }
     });
 
@@ -79,11 +77,18 @@ io.on("connection", function (socket) {
         if (socket.user) {
             var index = socket.user.index;
             userAccount[index].entered = "0";
-           setTimeout(function(){
-            userAccount[index].auth = "0";
-            console.log("clear user login data");
-           },1000000);
-             console.log(socket.user.username + " left....");
+            setTimeout(function () {
+                userAccount[index].auth = "0";
+                console.log("clear user login data");
+            }, 1000000);
+            if (socket.count % 2 == 0) {
+                socketList[socket.count + 1].emit("playerLeft");
+                socketList[socket.count + 1].emit("gameOver",true);
+            } else {
+                socketList[socket.count - 1].emit("playerLeft");
+                socketList[socket.count - 1].emit("gameOver",true);
+            }
+            console.log(socket.user.username + " left....");
         }
     });
 });
@@ -109,15 +114,15 @@ var bindEvents = function (socket) {
                 socket.emit("waiting", "waiting for another player ......");
             } else {
                 var data = {
-                    local:socket.user.nickname,
-                    remote:socketList[socket.count -1].user.nickname
+                    local: socket.user.nickname,
+                    remote: socketList[socket.count - 1].user.nickname
                 }
-                console.log(socketCount+" "+ socketList.length +" " + data.local +" " + data.remote);
-                socket.emit("start",data);
-                data.local = socketList[socket.count -1].user.nickname;
+                console.log(socketCount + " " + socketList.length + " " + data.local + " " + data.remote);
+                socket.emit("start", data);
+                data.local = socketList[socket.count - 1].user.nickname;
                 data.remote = socket.user.nickname;
-                console.log(data.local +" " + data.remote);
-                socketList[socket.count - 1].emit("start",data);
+                console.log(data.local + " " + data.remote);
+                socketList[socket.count - 1].emit("start", data);
             }
             auth = true;
             console.log(userAccount[index].username + "\n   " + auth);
@@ -131,10 +136,10 @@ var bindEvents = function (socket) {
     transport("next", socket);
     transport("move", socket);
     transport("weaponData", socket);
-    transport("useWeapon",socket);
-    transport("deleteLine",socket);
-    transport("message",socket);
-    transport("weaponMessage",socket);
+    transport("useWeapon", socket);
+    transport("deleteLine", socket);
+    transport("message", socket);
+    transport("weaponMessage", socket);
 };
 
 /**
@@ -148,7 +153,7 @@ function transport(type, socket) {
         //  console.log("transport "+type+" event");
         // console.log(socket.count +" " + socketList.length);
         if (type == "useWeapon") {
-            console.log(data);            
+            console.log(data);
         }
         if (socket.count % 2 == 0) {
             socketList[socket.count + 1].emit(type, data);
@@ -195,8 +200,8 @@ var loginLogic = function (socket) {
             "username": ""
         };
         for (var i = 0; i < userAccount.length; i++) {
-            console.log("userAccount["+i+"].username=" + userAccount[i].username  );
-            console.log("userAccount["+i+"].password=" + userAccount[i].password  );
+            console.log("userAccount[" + i + "].username=" + userAccount[i].username);
+            console.log("userAccount[" + i + "].password=" + userAccount[i].password);
 
             if (data.username == userAccount[i].username && data.password == userAccount[i].password) {
                 res.auth = true;

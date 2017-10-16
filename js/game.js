@@ -281,12 +281,20 @@ var Game = function () {
     };
 
     /**
-     * 
+     * 根据消行的行数来加分
      */
     var addScore = function (lines) {
         var scoreLevel = [0, 10, 30, 100, 180, 360];
         score += scoreLevel[lines];
         doms.scoreDiv.innerHTML = score;
+    };
+    var scoreFlag = 0;
+    var scoreGetWeaponLevel = [50,100,200,500,1000];
+    /**
+     *如果分数足够高来获得新的weapon 
+     */
+    var scoreGetWeapon = function(){
+        if(scoreFlag )
     };
     /**
      * 让下落至最低端的方块固定下来
@@ -423,10 +431,12 @@ var Game = function () {
     var useWeapon = function (index) {
         if (weapons[index].count > 0) {
             weapons[index].count--;
+            refreshWeapon();
+            return true;
         } else {
             console.log("弹药不足");
+            return false;
         }
-        refreshWeapon();
     };
 
     /**
@@ -435,8 +445,8 @@ var Game = function () {
      */
     var getLineData = function (index) {
         var data = [];
-        for(var i=0;i<gameData[0].length;i++){
-            data[i]=gameData[index][i];
+        for (var i = 0; i < gameData[0].length; i++) {
+            data[i] = gameData[index][i];
         }
         return data;
     }
@@ -579,7 +589,7 @@ var Game = function () {
         refresh(gameDoms, gameData);
     };
     //导出接口
-    this.canAddLine  = canAddLine;
+    this.canAddLine = canAddLine;
     this.getLineData = getLineData;
     this.getHeight = getHeight;
     this.deleteLine = deleteLine;
