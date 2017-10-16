@@ -28,7 +28,7 @@ body{
 .show-tips{
   position: absolute;
   top:0;
-  left:5px;
+  left:58px;
   color:#FFF;
   outline:none;
   background-color: #C40F39;
@@ -43,7 +43,7 @@ body{
   background-color: #fff;
   position: absolute;
   top:0;
-  left:120px;
+  left:168px;
   color:#C40F39;
   font-size:14px;
   line-height:28px;
@@ -76,8 +76,8 @@ body{
   border-right:8px solid #D1DAE0;
 }
 .square{
-  margin-left:50px;
-  width: 500px;
+  margin-left:20px;
+  width: 450px;
   height: 600px;
   float:left;
 }
@@ -107,7 +107,7 @@ body{
 .info{
  position: relative;
  float: left;
- margin-left :40px;
+ margin-left :20px;
  margin-top:10px;
 }
 .none,.current,.done,.special{
@@ -130,6 +130,9 @@ body{
 .done{
   background-color: gray;
   border: 1px solid black;
+}
+.weapon{
+  max-width: 400px;
 }
 .weapon-div{
   margin-bottom:10px;
@@ -163,6 +166,7 @@ body{
   width: 14px;
   height: 14px;
   display: block;
+  z-index: 100;
 }
 .weapon-icon{
   position: absolute;
@@ -194,4 +198,93 @@ body{
   height: 20px; 
   background-color: #D1DAE0;
   z-index:100;
+}
+.pressBtn{
+  position: absolute;
+  right:-6px;
+  bottom:-6px;
+  font-size:12px;
+  line-height: 12px;
+  padding: 1px;
+  background-color: #FFF;
+  border:1px solid #8B979F;
+  text-align: center;
+  border-radius: 4px;
+  width: 14px;
+  height: 14px;
+  display: block;
+  z-index:100;
+}
+.message{
+  width: 250px;
+  height: 300px;
+  float: left;
+  border:1px solid #8B979F;
+  border-radius:8px;
+  color:#69777E;
+  margin-top:110px;
+  font-size:10px;
+  position: relative;
+}
+#game-message{
+  max-height:300px;
+  overflow: hidden;
+}
+#messageInput{
+  position: absolute;
+  bottom:-50px;
+  left:0;
+  height: 24px;
+  width: 140px;
+  line-height:30px;
+  padding:2px;
+  outline:none;
+  background-color: transparent;
+  border-radius: 10px;
+  border: 2px solid #D1DAE0;
+}
+#sendMessage{
+  border: 1px solid #7FC247;
+  background-color: #7FC247;
+  outline:none;
+  width: 80px;
+  height: 30px;
+  color:#ffffff;
+  border-radius: 8px;
+  position: absolute;
+  bottom:-50px;
+  right:0;
+
+}
+#sendMessage:hover,#sendMessage:focus{
+  background-color: #85C853;
+  box-shadow: 2px 2px 5px rgba(0,0,0,0.2) ;
+}
+
+
+/* 
+*输入框样式
+*/
+.player {
+  font-size:16px;
+  color:#C40F39;
+}
+.you-say{
+  color:#A81D34;
+  font-size:16px;
+  font-weight: bold;
+}
+.he-say{
+  color:#08c;
+  font-size:16px;
+  font-weight: bold;
+}
+.message-div{
+  margin:0;
+  padding-left:6px;
+  font-size:14px;
+  color:#69777E;
+  word-wrap: break-word;
+  line-height:20px;
+
 }

@@ -19,13 +19,13 @@ var userAccount = [{
 }, {
     "username": "123",
     "password": "123",
-    "nickname": "zzy",
+    "nickname": "z12y",
     "entered": "0",
     "auth": "0"
 }, {
     "username": "admin",
     "password": "123",
-    "nickname": "zzy",
+    "nickname": "zz555y",
     "entered": "0",
     "auth": "0"
 }];
@@ -33,17 +33,23 @@ var userAccount = [{
 
 io.on("connection", function (socket) {
 
-    socket.count = socketCount;
-    socketList[socketCount] = socket;
-    socketCount++;
-    if (socket.count % 2 == 0) {
-        console.log("waiting: " + socket.count + " " + socketList.length);
-        socket.emit("waiting", "waiting for another player ......");
-    } else {
-        console.log("start: " + socket.count + " " + socketList.length);
-        io.emit("start");
-    }
-    socket.on("gameOver", function () {
+  
+    socket.on("addLine", function (lineData) {
+        var data = {};
+        data.lineData =lineData;
+        if (socket.count % 2 == 0) {
+            data.flag = "local";
+            socketList[socket.count + 1].emit("addLine", data);
+            data.flag = "remote";
+            socketList[socket.count].emit("addLine", data);
+        } else {
+            data.flag = "local";
+            socketList[socket.count - 1].emit("addLine", data);
+            data.flag = "remote";
+            socketList[socket.count ].emit("addLine", data);
+        }
+    });
+    socket.on("gameOver", function (lineData) {
         if (socket.count % 2 == 0) {
             socketList[socket.count + 1].emit("gameOver", true);
             socketList[socket.count].emit("gameOver", false);
@@ -70,12 +76,15 @@ io.on("connection", function (socket) {
      * 客户端断开连接
      */
     socket.on("disconnect", function () {
-        // if (socket.user) {
-        //     var index = socket.user.index;
-        //     userAccount[index].auth = "0";
-        //     userAccount[index].entered = "0";
-        //     console.log(socket.user.username + " left....")
-        // }
+        if (socket.user) {
+            var index = socket.user.index;
+            userAccount[index].entered = "0";
+           setTimeout(function(){
+            userAccount[index].auth = "0";
+            console.log("clear user login data");
+           },1000000);
+             console.log(socket.user.username + " left....");
+        }
     });
 });
 
@@ -86,28 +95,37 @@ io.on("connection", function (socket) {
 */
 var bindEvents = function (socket) {
 
-    // socket.on("checkAuth", function (name) {
-    //     var index = getUser(name);
-    //     var auth;
-    //     if (index != null && userAccount[index].auth == "1" && userAccount[index].entered == "0") {//说明进入游戏界面了
-    //         userAccount[index].entered = "1";
-    //         socket.user = userAccount[index];
-    //         socket.user.index = index;
-    //         socket.count = socketCount;
-    //         socketCount++;
-    //         if (socketCount % 2 == 1) {
-    //             socket.emit("waiting", "waiting for another player ......");
-    //         } else {
-    //             io.emit("start");
-    //         }
-    //         socketList.push(socket);
-    //         auth = true;
-    //         console.log(userAccount[index].username + "\n   " + auth);
-    //     } else {
-    //         auth = false;
-    //     }
-    //     socket.emit("backAuth", auth);
-    // });
+    socket.on("checkAuth", function (name) {
+        var index = getUser(name);
+        var auth;
+        if (index != null && userAccount[index].auth == "1" && userAccount[index].entered == "0") {//说明进入游戏界面了
+            userAccount[index].entered = "1";
+            socket.user = userAccount[index];
+            socket.user.index = index;
+            socket.count = socketCount;
+            socketList.push(socket);
+            socketCount++;
+            if (socket.count % 2 == 0) {
+                socket.emit("waiting", "waiting for another player ......");
+            } else {
+                var data = {
+                    local:socket.user.nickname,
+                    remote:socketList[socket.count -1].user.nickname
+                }
+                console.log(socketCount+" "+ socketList.length +" " + data.local +" " + data.remote);
+                socket.emit("start",data);
+                data.local = socketList[socket.count -1].user.nickname;
+                data.remote = socket.user.nickname;
+                console.log(data.local +" " + data.remote);
+                socketList[socket.count - 1].emit("start",data);
+            }
+            auth = true;
+            console.log(userAccount[index].username + "\n   " + auth);
+        } else {
+            auth = false;
+        }
+        socket.emit("backAuth", auth);
+    });
 
     transport("init", socket);
     transport("next", socket);
@@ -115,7 +133,8 @@ var bindEvents = function (socket) {
     transport("weaponData", socket);
     transport("useWeapon",socket);
     transport("deleteLine",socket);
-
+    transport("message",socket);
+    transport("weaponMessage",socket);
 };
 
 /**
@@ -126,7 +145,7 @@ var bindEvents = function (socket) {
  */
 function transport(type, socket) {
     socket.on(type, function (data) {
-        // console.log("transport "+type+" event");
+        //  console.log("transport "+type+" event");
         // console.log(socket.count +" " + socketList.length);
         if (type == "useWeapon") {
             console.log(data);            
@@ -170,11 +189,15 @@ var registerLogic = function (socket) {
  */
 var loginLogic = function (socket) {
     socket.on("login", function (data) {
+        console.log(data.username + " " + data.password);
         var res = {
             "auth": false,
             "username": ""
         };
         for (var i = 0; i < userAccount.length; i++) {
+            console.log("userAccount["+i+"].username=" + userAccount[i].username  );
+            console.log("userAccount["+i+"].password=" + userAccount[i].password  );
+
             if (data.username == userAccount[i].username && data.password == userAccount[i].password) {
                 res.auth = true;
                 res.username = userAccount[i].username;
@@ -182,7 +205,7 @@ var loginLogic = function (socket) {
                 break;
             }
         }
-        socket.emit("loginBack", true);
+        socket.emit("loginBack", res);
     });
 }
 

@@ -15,32 +15,37 @@
   <div id="waiting"></div>
   <div class="square clearfix" id="local">
     <div class="black-cover black-cover-local hide"></div>
-    <div class="title">我的游戏区域</div>
+    <div class="title"><span id="local-player">Ni</span>的游戏区域</div>
     <div class="weapon" id="local_weapon">
       <div class="weapon-div">
         <div class="weapon-name">炸弹</div>
         <i class="weapon-icon fa fa-bomb"></i>
         <span class="weapon0" align="center">0</span>
+        <div class="pressBtn">Q</div>
       </div>
       <div class="weapon-div">
         <div class="weapon-name">黑幕</div>
         <i class="weapon-icon fa fa-stop"></i>
         <span class="weapon1" align="center">0</span>
+        <div class="pressBtn">W</div>
       </div>
       <div class="weapon-div">
         <div class="weapon-name">静止</div>
         <i class="weapon-icon fa fa-minus-square"></i>
         <span class="weapon2" align="center">0</span>
+        <div class="pressBtn">E</div>
       </div>
       <div class="weapon-div">
         <div class="weapon-name">加速</div>
         <i class="weapon-icon fa fa-clock-o"></i>
         <span class="weapon3" align="center">0</span>
+        <div class="pressBtn">R</div>
       </div>
       <div class="weapon-div">
         <div class="weapon-name">异形</div>
         <i class="weapon-icon fa fa-th"></i>
         <span class="weapon4" align="center">0</span>
+        <div class="pressBtn">T</div>
       </div>
     </div>
     <div class="game" id="local_game">
@@ -59,34 +64,44 @@
     <div class="tips hide">请用方向键和空格键进行操作: <br> 上-&gt;旋转， 左-&gt;左移 ，右-&gt;右移， 下-&gt;下移， 空格-&gt;坠落<br> Q~T 使用对应的道具
     </div>
   </div>
+  <div class="message">
+      <div class="game-message" id="game-message"></div>
+      <input type="text" id ="messageInput">
+      <button class="sendMessage" id="sendMessage">发送</button>
+  </div>
   <div class="square clearfix" id="remote">
     <div class="black-cover black-cover-remote hide"></div>
-    <div class="title">ta的游戏区域</div>
+    <div class="title"><span id="remote-player">Ta</span>的游戏区域</div>
     <div class="weapon" id="remote_weapon">
       <div class="weapon-div">
         <div class="weapon-name">炸弹</div>
         <i class="weapon-icon fa fa-bomb"></i>
         <span class="weapon0" align="center">0</span>
+        <div class="pressBtn">Q</div>
       </div>
       <div class="weapon-div">
         <div class="weapon-name ">黑幕</div>
         <i class="weapon-icon fa fa-stop"></i>
         <span class="weapon1" align="center">0</span>
+        <div class="pressBtn">W</div>
       </div>
       <div class="weapon-div">
         <div class="weapon-name">静止</div>
         <i class="weapon-icon fa fa-minus-square"></i>
         <span class="weapon2" align="center">0</span>
+        <div class="pressBtn">E</div>
       </div>
       <div class="weapon-div">
         <div class="weapon-name">加速</div>
         <i class="weapon-icon fa fa-clock-o"></i>
         <span class="weapon3" align="center">0</span>
+        <div class="pressBtn">R</div>
       </div>
       <div class="weapon-div">
         <div class="weapon-name">异形</div>
         <i class="weapon-icon fa fa-th"></i>
         <span class="weapon4" align="center">0</span>
+        <div class="pressBtn">T</div>
       </div>
     </div>
     <div class="game" id="remote_game">

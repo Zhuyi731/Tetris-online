@@ -9,7 +9,9 @@
             timeDiv: $("#remote_time")[0],
             scoreDiv: $("#remote_score")[0],
             resultDiv: $("#remote_gameOver")[0],
-            weaponDiv: $("#remote_weapon")[0]
+            weaponDiv: $("#remote_weapon")[0],
+            arrowDiv: $("#remote_arrow")[0],
+            twinkleDiv: $("#remote_twinkle_line")[0]
         };
 
         var start = function (data) {
@@ -45,7 +47,16 @@
             socket.on("weaponData",function(data){
                 game.setWeaponData(data);
             });
-          
+            
+            socket.on("deleteLine", function (lineIndex) {
+                game.getHeight();
+                game.selectAnimate(lineIndex);
+            });
+            socket.on("addLine",function(data){
+                if(data.flag == "remote"){
+                  game.addLine(data.lineData);
+                }
+            }); 
         })();
 
 

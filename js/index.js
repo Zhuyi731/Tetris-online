@@ -3,7 +3,7 @@ $(function(){
     socket.emit("checkAuth",window.location.href.split("?")[1]);
     socket.on("backAuth",function(auth){
         if(!auth){
-            // window.location.href = "./login.html";
+            window.location.href = "./login.html";
         }else{//有权限登录
             
         }
@@ -17,6 +17,6 @@ $(function(){
 
     var local = new Local(socket);
     var remote = new Remote(socket);
-    local.start();
+    // local.start()
 
 });
