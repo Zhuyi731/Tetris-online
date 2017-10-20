@@ -37,23 +37,40 @@ io.on("connection", function (socket) {
         data.lineData = lineData;
         if (socket.count % 2 == 0) {
             data.flag = "local";
-            socketList[socket.count + 1].emit("addLine", data);
+            if (socketList[socket.count + 1]) {
+                socketList[socket.count + 1].emit("addLine", data);
+            }
             data.flag = "remote";
-            socketList[socket.count].emit("addLine", data);
+
+            if (socketList[socket.count]) {
+                socketList[socket.count].emit("addLine", data);
+            }
         } else {
             data.flag = "local";
-            socketList[socket.count - 1].emit("addLine", data);
+            if (socketList[socket.count - 1]) {
+                socketList[socket.count - 1].emit("addLine", data);
+            }
             data.flag = "remote";
-            socketList[socket.count].emit("addLine", data);
+            if (socketList[socket.count]) {
+                socketList[socket.count].emit("addLine", data);
+            }
         }
     });
     socket.on("gameOver", function (lineData) {
         if (socket.count % 2 == 0) {
-            socketList[socket.count + 1].emit("gameOver", true);
-            socketList[socket.count].emit("gameOver", false);
+            if (socketList[socket.count + 1]) {
+                socketList[socket.count + 1].emit("gameOver", true);
+            }
+            if (socketList[socket.count]) {
+                socketList[socket.count].emit("gameOver", false);
+            }
         } else {
-            socketList[socket.count - 1].emit("gameOver", true);
-            socketList[socket.count].emit("gameOver", false);
+            if (socketList[socket.count - 1]) {
+                socketList[socket.count - 1].emit("gameOver", true);
+            }
+            if (socketList[socket.count]) {
+                socketList[socket.count].emit("gameOver", false);
+            }
         }
     });
 
@@ -82,11 +99,15 @@ io.on("connection", function (socket) {
                 console.log("clear user login data");
             }, 1000000);
             if (socket.count % 2 == 0) {
-                socketList[socket.count + 1].emit("playerLeft");
-                socketList[socket.count + 1].emit("gameOver",true);
+                if (socketList[socket.count + 1]) {
+                    socketList[socket.count + 1].emit("playerLeft");
+                    socketList[socket.count + 1].emit("gameOver", true);
+                }
             } else {
-                socketList[socket.count - 1].emit("playerLeft");
-                socketList[socket.count - 1].emit("gameOver",true);
+                if (socketList[socket.count - 1]) {
+                    socketList[socket.count - 1].emit("playerLeft");
+                    socketList[socket.count - 1].emit("gameOver", true);
+                }
             }
             console.log(socket.user.username + " left....");
         }
@@ -156,9 +177,13 @@ function transport(type, socket) {
             console.log(data);
         }
         if (socket.count % 2 == 0) {
-            socketList[socket.count + 1].emit(type, data);
+            if (socketList[socket.count + 1]) {
+                socketList[socket.count + 1].emit(type, data);
+            }
         } else {
-            socketList[socket.count - 1].emit(type, data);
+            if (socketList[socket.count - 1]) {
+                socketList[socket.count - 1].emit(type, data);
+            }
         }
     });
 }

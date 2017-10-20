@@ -3,9 +3,9 @@
 
 
     var Square = function (type,dir) {
-        this.data = that.squareData[type];
-        this.dir = dir;
-        this.pos = {
+        this.data = that.squareData[type];//表示方块的数据   是一个二维矩阵
+        this.dir = dir;//表示方块的四种状态
+        this.pos = {//表示方块在坐标轴的位置
             x: 0,
             y: 3
         };

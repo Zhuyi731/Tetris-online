@@ -4,7 +4,7 @@
         //定时器
         var timer = null;
         //速度定义
-        var NORMALDOWNSPEED = 1000;
+        var NORMALDOWNSPEED = 500;
         var speed = NORMALDOWNSPEED;
         //武器名字
         var weaponNames = ["消行炸弹", "黑幕", "时间静止", "时间加速", "异形方块"];
@@ -59,12 +59,19 @@
                     type: getRandom(7),
                     dir: getRandom(4)
                 };
-                if (getRandom(100) >= 30) {
+                if (getRandom(100) >= 92) {
                     nextBlock.type = 11;
                 }
                 if (isUgly) {
                     nextBlock.type = getRandom(5) + 7;
                     isUgly--;
+                }
+                var dataTemp = game.scoreGetWeapon();
+                if(dataTemp[0].index != -1){
+                    message("到达"+dataTemp[0].score+"分，获得了额外道具"+weaponNames[dataTemp[0].index],"getWeapon");
+                }
+                if(dataTemp[1].index !=-1){
+                    message("增加100分，获得道具"+weaponNames[dataTemp[1].index],"getWeapon");
                 }
                 var weaponData = game.getWeaponData();
                 socket.emit("weaponData", weaponData);
@@ -117,6 +124,9 @@
                 case "enter":
                     $("#game-message").append("<p class='message-div'>" + text + "</p>");
                     break;
+                case "getWeapon":
+                    $("#game-message").append("<p class='message-div'>" + text + "</p>");
+                    break;
                 case "message":
                     $("#game-message").append("<p class='message-div'><span class='you-say'>你说:</span>" + text + "</p>");
                     socket.emit("message", text);
@@ -144,7 +154,6 @@
                     break;
                 default:
                     break;
-
             }
             messageCount++;
             if (messageCount > 9) {

@@ -1,5 +1,6 @@
 var Game = function () {
     //游戏区域
+
     var doms = {
         gameDiv: null,
         nextDiv: null,
@@ -22,19 +23,19 @@ var Game = function () {
     var weapons = [
         {
             "name": "消行炸弹",
-            "count": 3
+            "count": 1
         }, {
             "name": "黑幕",
-            "count": 3
+            "count": 1
         }, {
             "name": "时间静止",
-            "count": 3
+            "count": 1
         }, {
             "name": "时间加速",
-            "count": 3
+            "count": 1
         }, {
             "name": "异形方块",
-            "count": 2
+            "count": 1
         }
     ];
     //游戏数据
@@ -223,6 +224,7 @@ var Game = function () {
         var weaponIndex = getRandom(weapons.length);
         weapons[weaponIndex].count++;
         refreshWeapon();
+        return weaponIndex;
         // $wepDiv = $(doms.weaponDiv);
         // $wepDiv.find(".weapon"+weaponIndex).html(weapons[weaponIndex].count);
     };
@@ -289,12 +291,28 @@ var Game = function () {
         doms.scoreDiv.innerHTML = score;
     };
     var scoreFlag = 0;
-    var scoreGetWeaponLevel = [50,100,200,500,1000];
+    var scoreFlag2 = 1;
+    var scoreGetWeaponLevel = [50,100, 200, 500, 1000];
     /**
      *如果分数足够高来获得新的weapon 
      */
-    var scoreGetWeapon = function(){
-        if(scoreFlag )
+    var scoreGetWeapon = function () {
+        var data = [{},{}];
+        if (score >= scoreGetWeaponLevel[scoreFlag]) {
+            data[0].index = getWeapon();
+            data[0].score = scoreGetWeaponLevel[scoreFlag];
+            scoreFlag++;
+        } else {
+            data[0].index = -1;
+        }
+
+        if (score >= scoreFlag2 * 100) {
+            scoreFlag2++;
+            data[1].index = getWeapon();
+        } else {
+            data[1].index = -1;
+        }
+        return data;
     };
     /**
      * 让下落至最低端的方块固定下来
@@ -589,6 +607,7 @@ var Game = function () {
         refresh(gameDoms, gameData);
     };
     //导出接口
+    this.scoreGetWeapon = scoreGetWeapon;
     this.canAddLine = canAddLine;
     this.getLineData = getLineData;
     this.getHeight = getHeight;
